@@ -1,98 +1,135 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+📘 Purchase Order Management API (NestJS + MongoDB)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A modular, scalable backend API built with NestJS, TypeScript, and MongoDB to manage complete Purchase Orders, Goods Receipt Notes (GRN), and PO Status workflows.
+This project follows clean architecture principles using Modules, Controllers, Services, DTOs, and Mongoose Schemas.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+🚀 Tech Stack
 
-## Description
+NestJS (v11)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Node.js (TypeScript)
 
-## Project setup
+MongoDB + Mongoose
 
-```bash
-$ npm install
-```
+Class Validator & Transformer
 
-## Compile and run the project
+ts-node-dev
 
-```bash
-# development
-$ npm run start
+REST API Architecture
 
-# watch mode
-$ npm run start:dev
+📦 Project Modules
 
-# production mode
-$ npm run start:prod
-```
+🔹 1. Purchase Order Master
 
-## Run tests
+Manages PO header information:
+PO Number
+Supplier details
+Order date
+Total value
+Expected delivery date
 
-```bash
-# unit tests
-$ npm run test
+🔹 2. Purchase Order Details
 
-# e2e tests
-$ npm run test:e2e
+Manages PO line items:
+Product ID
+Quantity
+Rate
+Amount
+PO reference (Foreign Key)
 
-# test coverage
-$ npm run test:cov
-```
+🔹 3. GRN Master (Goods Receipt Note)
 
-## Deployment
+Captures receipt of purchased material:
+GRN Number
+Supplier
+GRN Date
+Linked Purchase Order
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+🔹 4. GRN Details
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Line-item details of GRN:
+Item received
+Quantity received
+Batch / Serial details
+GRN reference
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+🔹 5. Purchase Order Status
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Tracks workflow stages:
+Created
+Approved
+Ordered
+Received
+Closed
 
-## Resources
+📁 Folder Structure
+src/
+ ├── purchase-order-master/
+ ├── purchase-order-detail/
+ ├── grn-master/
+ ├── grn-detail/
+ ├── po-status/
+ ├── app.module.ts
+ ├── main.ts
 
-Check out a few resources that may come in handy when working with NestJS:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Each module includes:
 
-## Support
+controller.ts
+service.ts
+schema.ts
+dto.ts
+module.ts
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
 
-## Stay in touch
+🛠️ Install Dependencies
+npm install
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+▶️ Run in Development
+npm run start:dev
 
-## License
+🏗️ Build
+npm run build
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+🚀 Start Production
+npm run start:prod
+
+📡 API Endpoints
+
+📘 Purchase Order Master
+Method	Endpoint	Description
+POST	/po-master	Create Purchase Order
+GET	/po-master	Get all POs
+GET	/po-master/:po_no	Get PO by PO Number
+PUT	/po-master/:po_no	Update PO
+DELETE	/po-master/:po_no	Delete PO
+
+📗 Purchase Order Details
+Method	Endpoint	Description
+POST	/po-detail	Create PO Detail
+GET	/po-detail	Get all PO Details
+GET	/po-detail/by-po/:poId	Get details by PO
+PUT	/po-detail/:id	Update PO detail
+DELETE	/po-detail/:id	Delete PO detail
+
+📙 GRN Master
+Method	Endpoint	Description
+POST	/grn-master	Create GRN
+GET	/grn-master	Get all GRNs
+GET	/grn-master/:grn_no	Get GRN by number
+📒 GRN Details
+
+Method	Endpoint	Description
+POST	/grn-detail	Create GRN Detail
+GET	/grn-detail	Get all GRN details
+GET	/grn-detail/by-grn/:grnId	Get details by GRN
+PUT	/grn-detail/:id	Update GRN detail
+DELETE	/grn-detail/:id	Delete GRN detail
+
+📘 PO Status
+Method	Endpoint	Description
+POST	/po-status	Create PO status entry
+GET	/po-status	Get all status records
+GET	/po-status/:po_no	Get status by PO number
+PUT	/po-status/:id	Update status
+DELETE	/po-status/:id	Delete status
