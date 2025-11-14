@@ -5,9 +5,15 @@ import { PurchaseOrderMasterService } from './purchase-order-master.service';
 import { PurchaseOrderMasterController } from './purchase-order-master.controller';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: PurchaseOrderMaster.name, schema: PurchaseOrderMasterSchema }])],
+  imports: [
+    MongooseModule.forFeature([
+      { name: PurchaseOrderMaster.name, schema: PurchaseOrderMasterSchema },
+    ]),
+  ],
   controllers: [PurchaseOrderMasterController],
   providers: [PurchaseOrderMasterService],
-  exports: [PurchaseOrderMasterService],
+  exports: [
+    MongooseModule,  // 👈 This is correct
+  ],
 })
 export class PurchaseOrderMasterModule {}

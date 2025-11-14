@@ -6,27 +6,81 @@ import { CreateGrnDetailDto } from './dto/create-grn-detail.dto';
 
 @Injectable()
 export class GrnDetailService {
-  constructor(@InjectModel(GrnDetail.name) private model: Model<GrnDetailDocument>) {}
+  constructor(
+    @InjectModel(GrnDetail.name)
+    private readonly model: Model<GrnDetailDocument>,
+  ) {}
 
+  // -------------------------------
+  // CREATE GRN DETAIL
+  // -------------------------------
   create(dto: CreateGrnDetailDto) {
-    const data: any = { ...dto, grnId: new Types.ObjectId(dto.grnId) };
-    if (dto.poId) data.poId = new Types.ObjectId(dto.poId);
-    return new this.model(data).save();
+    const data: any = {
+      ...dto,
+      grnId: new Types.ObjectId(dto.grnId), // FIXED
+    };
+
+    if (dto.poId) {
+      data.poId = new Types.ObjectId(dto.poId);
+    }
+
+    return this.model.create(data);
   }
 
-  findByGrnId(grnId: string) { return this.model.find({ grnId }).lean(); }
+  // -------------------------------
+  // FIND GRN DETAILS BY GRN ID
+  // -------------------------------
+  findByGrnId(grnId: string) {
+    return this.model
+      .find({
+        grnId: new Types.ObjectId(grnId), // FIXED
+      })
+      .populate('grnId')
+      .lean();
+  }
 
-  findAll() { return this.model.find().populate('grnId').lean(); }
+  // -------------------------------
+  // GET ALL GRN DETAILS
+  // -------------------------------
+  findAll() {
+    return this.model.find().populate('grnId').lean();
+  }
 
+  // -------------------------------
+  // UPDATE GRN DETAIL
+  // -------------------------------
   async update(id: string, payload: Partial<CreateGrnDetailDto>) {
-    const updated = await this.model.findByIdAndUpdate(id, payload, { new: true });
-    if (!updated) throw new NotFoundException('GRN detail not found');
+    const updateData: any = { ...payload };
+
+    if (payload.grnId) {
+      updateData.grnId = new Types.ObjectId(payload.grnId);
+    }
+
+    if (payload.poId) {
+      updateData.poId = new Types.ObjectId(payload.poId);
+    }
+
+    const updated = await this.model.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    if (!updated) {
+      throw new NotFoundException('GRN detail not found');
+    }
+
     return updated;
   }
 
+  // -------------------------------
+  // DELETE GRN DETAIL
+  // -------------------------------
   async delete(id: string) {
-    const res = await this.model.findByIdAndDelete(id);
-    if (!res) throw new NotFoundException('GRN detail not found');
-    return res;
+    const deleted = await this.model.findByIdAndDelete(id);
+
+    if (!deleted) {
+      throw new NotFoundException('GRN detail not found');
+    }
+
+    return deleted;
   }
 }

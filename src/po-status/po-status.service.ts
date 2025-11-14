@@ -1,28 +1,61 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { PoStatus, PoStatusDocument } from './po-status.schema';
-import { CreatePoStatusDto } from './dto/create-po-status.dto';
+import { Model, Types } from 'mongoose';
+
+import { PurchaseOrderMaster } from '../purchase-order-master/purchase-order-master.schema';
+import { PurchaseOrderDetail } from '../purchase-order-detail/purchase-order-detail.schema';
+import { GrnDetail } from '../grn-detail/grn-detail.schema';
 
 @Injectable()
 export class PoStatusService {
-  constructor(@InjectModel(PoStatus.name) private model: Model<PoStatusDocument>) {}
+  constructor(
+    @InjectModel(PurchaseOrderMaster.name)
+    private poMasterModel: Model<PurchaseOrderMaster>,
 
-  create(dto: CreatePoStatusDto) { return new this.model(dto).save(); }
+    @InjectModel(PurchaseOrderDetail.name)
+    private poDetailModel: Model<PurchaseOrderDetail>,
 
-  findAll() { return this.model.find().lean(); }
+    @InjectModel(GrnDetail.name)
+    private grnDetailModel: Model<GrnDetail>,
+  ) {}
 
-  findByPoNo(po_no: string) { return this.model.find({ po_no }).lean(); }
+  async generateReport() {
+    // 1. Fetch all purchase orders
+    const masters = await this.poMasterModel.find().lean();
 
-  async update(id: string, payload: Partial<CreatePoStatusDto>) {
-    const updated = await this.model.findByIdAndUpdate(id, payload, { new: true });
-    if (!updated) throw new NotFoundException('PO status not found');
-    return updated;
-  }
+    const report = [];
 
-  async delete(id: string) {
-    const res = await this.model.findByIdAndDelete(id);
-    if (!res) throw new NotFoundException('PO status not found');
-    return res;
+    for (const master of masters) {
+      const poId = master._id;   // ObjectId
+      const poNo = master.po_no; // String Po No
+
+      // 2. Fetch PO Detail records for this PO
+      const poDetails = await this.poDetailModel.find({ poId }).lean();
+
+      // 3. Fetch GRN details for this PO
+      const grnDetails = await this.grnDetailModel.find({ poId }).lean();
+
+      for (const item of poDetails) {
+        const productId = item.pro_id;
+
+        // Sum received qty for this product
+        const receivedQty = grnDetails
+          .filter(g => g.pro_id === productId)
+          .reduce((sum, g) => sum + g.qty, 0);
+
+        const orderedQty = item.qty;
+
+        report.push({
+          po_no: poNo,
+          sup_id: master.sup_id,
+          pro_id: productId,
+          ordered_qty: orderedQty,
+          received_qty: receivedQty,
+          pending_qty: orderedQty - receivedQty,
+        });
+      }
+    }
+
+    return report;
   }
 }
